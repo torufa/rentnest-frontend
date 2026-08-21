@@ -3,8 +3,10 @@ import { Geist, Geist_Mono, Noto_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
-import { ModeToggle } from "@/components/ui/ModeToggle";
 import { Toaster } from "sonner";
+import Navbar from "@/components/shared/Navbar";
+import Footer from "@/components/shared/Footer";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 
 
 const notoSans = Noto_Sans({subsets:['latin'],variable:'--font-sans'});
@@ -37,9 +39,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             enableSystem
             disableTransitionOnChange
           >
-            <ModeToggle/>
+            <Navbar/>
           {children}
           <Toaster richColors/>
+          <ScrollToTop/>
+          <Footer/>
         </ThemeProvider>
       </body>
     </html>

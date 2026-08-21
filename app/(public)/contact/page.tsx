@@ -49,7 +49,6 @@ export default function ContactPage() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      {/* Header */}
       <section className="px-6 pb-16 pt-12 sm:px-10 lg:px-16 xl:px-24">
         <div className="mx-auto max-w-7xl">
           <p className="mb-5 text-sm font-medium uppercase tracking-[0.18em] text-primary">
@@ -72,7 +71,6 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Body */}
       <section className="border-t border-border">
         <div className="mx-auto grid max-w-7xl lg:grid-cols-[0.8fr_1.2fr]">
           <div className="border-b border-border px-6 py-12 sm:px-10 lg:border-b-0 lg:border-r lg:px-16 lg:py-16 xl:px-24">
