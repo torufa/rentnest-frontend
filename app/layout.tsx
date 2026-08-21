@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { ModeToggle } from "@/components/ui/ModeToggle";
+import { Toaster } from "sonner";
 
 
 const notoSans = Noto_Sans({subsets:['latin'],variable:'--font-sans'});
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           >
             <ModeToggle/>
           {children}
+          <Toaster richColors/>
         </ThemeProvider>
       </body>
     </html>
