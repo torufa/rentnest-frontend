@@ -29,3 +29,5 @@ export type RegisterState = {
 export type NavbarProps = {
     user : RegisterState
 }
+
+export type UserRole = "tenant" | "landlord" | "admin"
