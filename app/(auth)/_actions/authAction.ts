@@ -5,7 +5,7 @@ import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import jwt, { JwtPayload } from "jsonwebtoken"
 
-export const LoginAction = async(prevState: LoginState, formData: FormData) => {
+export const LoginAction = async(redirectTo: string, prevState: LoginState, formData: FormData) => {
     const email = formData.get('email')
     const password = formData.get('password')
 
@@ -38,6 +38,9 @@ export const LoginAction = async(prevState: LoginState, formData: FormData) => {
         })
     }
 
+    if(redirectTo && typeof redirectTo === "string" && redirectTo.startsWith('/') && !redirectTo.startsWith('//')){
+            redirect(redirectTo)
+    }
     const decodedToken = jwt.decode(result.data.accessToken) as JwtPayload
     if(decodedToken.role === "LANDLORD"){
             redirect("/landlord")

@@ -12,9 +12,12 @@ import { LoginAction } from "../_actions/authAction"
 import { useActionState, useEffect } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
+import { useSearchParams } from "next/navigation"
 
-export function LoginForm() {
-    const [state, action, pending] = useActionState(LoginAction, false)
+export function LoginForm() {  
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirectTo') ?? ''
+    const [state, action, pending] = useActionState(LoginAction.bind(null, redirectTo), false)
     useEffect(()=>{
         if(!state){
             return
