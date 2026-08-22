@@ -1,78 +1,66 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
 import {
   LogOut,
   LayoutDashboard,
-  User,
+  User as UserIcon,
   Menu,
   X,
 } from "lucide-react"
-
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
 import { ModeToggle } from "../ui/ModeToggle"
-
-type UserRole = "tenant" | "landlord" | "admin"
-
-interface NavbarProps {
-  role?: UserRole
-}
-
-const roleInitial: Record<UserRole, string> = {
-  tenant: "T",
-  landlord: "L",
-  admin: "A",
-}
+import { Button } from "../ui/button"
+import { NavbarProps } from "@/lib/types"
+import { logOut } from "@/service/logOut"
+import { toast } from "sonner"
 
 const navItems = [
-  {
-    label: "Home",
-    href: "/",
-  },
-  {
-    label: "Properties",
-    href: "/properties",
-  },
-  {
-    label: "Contact Us",
-    href: "/contact",
-  },
+  { label: "Home", href: "/" },
+  { label: "Properties", href: "/properties" },
+  { label: "Contact Us", href: "/contact" },
 ]
 
-export default function Navbar({
-  role = "landlord",
-}: NavbarProps) {
+export default function Navbar({ user }: NavbarProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  const initial = roleInitial[role]
+  const userData = user?.data?.result
 
-  const closeMobileMenu = () => {
-    setMobileMenuOpen(false)
+  const getInitial = () => {
+    if (userData?.role) return userData.role.charAt(0).toUpperCase()
+    if (userData?.name) return userData.name.charAt(0).toUpperCase()
+    if (userData?.email) return userData.email.charAt(0).toUpperCase()
+    return "U"
   }
 
-  const isActive = (href: string) => {
-    if (href === "/") {
-      return pathname === "/"
-    }
+  const closeMobileMenu = () => setMobileMenuOpen(false)
 
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/"
     return pathname.startsWith(href)
+  }
+
+  const handleLogout = async () => {
+    await logOut() 
+    router.push("/login")
+    toast.success("user logged out successfully.")
   }
 
   return (
     <header className="sticky top-0 z-50 w-full">
       <nav className="border-b bg-background/75 backdrop-blur-xl backdrop-saturate-150">
         <div className="mx-auto flex h-20 max-w-[1600px] items-center justify-between px-6 sm:px-10 lg:px-16 xl:px-24">
-
           <Link
             href="/"
             onClick={closeMobileMenu}
@@ -84,7 +72,6 @@ export default function Navbar({
           <div className="hidden items-center gap-8 md:flex">
             {navItems.map((item) => {
               const active = isActive(item.href)
-
               return (
                 <Link
                   key={item.href}
@@ -96,7 +83,6 @@ export default function Navbar({
                   }`}
                 >
                   {item.label}
-
                   {active && (
                     <span className="absolute inset-x-0 -bottom-1 mx-auto h-0.5 w-5 rounded-full bg-primary" />
                   )}
@@ -108,68 +94,79 @@ export default function Navbar({
           <div className="flex items-center gap-2">
             <ModeToggle />
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  aria-label="Open profile menu"
-                  className="flex size-10 items-center justify-center rounded-full border bg-background/60 text-sm font-semibold shadow-sm backdrop-blur-md transition-all hover:border-primary/40 hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary/20"
+            {!user.success ? (
+              <>
+                <Button asChild variant="secondary">
+                  <Link href="/login">Log In</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/register">Register</Link>
+                </Button>
+              </>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="Open profile menu"
+                    className="flex size-10 items-center justify-center rounded-full border bg-background/60 text-sm font-semibold shadow-sm backdrop-blur-md transition-all hover:border-primary/40 hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  >
+                    {getInitial()}
+                  </button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                  align="end"
+                  sideOffset={10}
+                  className="w-48 rounded-xl border bg-popover/95 p-1.5 shadow-xl backdrop-blur-xl"
                 >
-                  {initial}
-                </button>
-              </DropdownMenuTrigger>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm font-medium">
+                    {user.data?.result.name || "name"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {user.data?.result.email || "email"}
+                  </p>
+                  <p className="text-xs p-2 bg-primary text-white">
+                    {user.data?.result.role || "role"}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
+                    <Link href="/profile">
+                      <UserIcon className="mr-2 size-4" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
 
-              <DropdownMenuContent
-                align="end"
-                sideOffset={10}
-                className="w-48 rounded-xl border bg-popover/95 p-1.5 shadow-xl backdrop-blur-xl"
-              >
-                <DropdownMenuItem
-                  asChild
-                  className="cursor-pointer rounded-lg"
-                >
-                  <Link href="/profile">
-                    <User className="mr-2 size-4" />
-                    Profile
-                  </Link>
-                </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
+                    <Link href="/dashboard">
+                      <LayoutDashboard className="mr-2 size-4" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
 
-                <DropdownMenuItem
-                  asChild
-                  className="cursor-pointer rounded-lg"
-                >
-                  <Link href="/dashboard">
-                    <LayoutDashboard className="mr-2 size-4" />
-                    Dashboard
-                  </Link>
-                </DropdownMenuItem>
+                  <DropdownMenuSeparator />
 
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem className="cursor-pointer rounded-lg text-destructive focus:text-destructive">
-                  <LogOut className="mr-2 size-4" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="cursor-pointer rounded-lg text-destructive focus:text-destructive"
+                  >
+                    <LogOut className="mr-2 size-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
 
             <button
               type="button"
-              aria-label={
-                mobileMenuOpen
-                  ? "Close navigation menu"
-                  : "Open navigation menu"
-              }
-              onClick={() =>
-                setMobileMenuOpen((open) => !open)
-              }
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              onClick={() => setMobileMenuOpen((open) => !open)}
               className="flex size-10 items-center justify-center rounded-full border bg-background/60 backdrop-blur-md transition-colors hover:bg-muted md:hidden"
             >
-              {mobileMenuOpen ? (
-                <X className="size-5" />
-              ) : (
-                <Menu className="size-5" />
-              )}
+              {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
             </button>
           </div>
         </div>
@@ -179,7 +176,6 @@ export default function Navbar({
             <div className="mx-auto flex max-w-[1600px] flex-col gap-1 sm:px-4">
               {navItems.map((item) => {
                 const active = isActive(item.href)
-
                 return (
                   <Link
                     key={item.href}

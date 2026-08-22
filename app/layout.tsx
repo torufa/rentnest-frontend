@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import ScrollToTop from "@/components/ui/ScrollToTop";
+import { getMe } from "@/service/getMe";
 
 
 const notoSans = Noto_Sans({subsets:['latin'],variable:'--font-sans'});
@@ -26,7 +27,8 @@ export const metadata: Metadata = {
   description: "A modern rental marketplace platform",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const user = await getMe()
   return (
     <html
       lang="en" suppressHydrationWarning
@@ -39,9 +41,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             enableSystem
             disableTransitionOnChange
           >
-            <Navbar/>
+            <Navbar user={user}/>
           {children}
-          <Toaster richColors/>
+          <Toaster richColors position='top-center'/>
           <ScrollToTop/>
           <Footer/>
         </ThemeProvider>
