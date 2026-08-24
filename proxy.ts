@@ -5,7 +5,7 @@ import { getNewAccessToken } from "./service/refreshToken";
 const AUTH_ROUTES = ["/login", "/register"];
 const AUTHENTICATED_ROUTES = ["/profile"]
 
-const PUBLIC_ROUTES = ["/", "/properties", "/contact"];
+const PUBLIC_ROUTES = ["/", "/properties", "/contact", "/premium"];
 
 const PROTECTED_ROUTES = {
   ADMIN: ["/admin"],
