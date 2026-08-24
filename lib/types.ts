@@ -143,3 +143,30 @@ export type UpdatePropertyData = {
   categoryId?: string;
   picture?: string;
 };
+
+export type TenantRentalProperty = {
+  id: string;
+  propertyName: string;
+  picture: string | null;
+  description: string;
+  amenities: string[];
+  location: string;
+  price: string;
+  status: PropertyStatus;
+  categoryId: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TenantRentalRequest = {
+  id: string;
+  status: RentalRequestStatus;
+  customerId: string;
+  propertyId: string;
+  rentDate: string;
+  rentalExpiryDate: string;
+  createdAt: string;
+  updatedAt: string;
+  property: TenantRentalProperty;
+};

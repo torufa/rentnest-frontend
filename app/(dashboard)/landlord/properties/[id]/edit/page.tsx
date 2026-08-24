@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { getLandlordProperties } from "../../../_actions/landlord";
-import { getCategories } from "../../../_actions/categories";
+import { getCategories } from "../../../../../(public)/_actions/categories";
 import PropertyForm from "../../../_components/landlord/PropertyForm";
 
 type EditPropertyPageProps = {
@@ -17,38 +17,29 @@ export default async function EditPropertyPage({
 }: EditPropertyPageProps) {
   const { id } = await params;
 
-  const [propertiesRes, categoriesRes] =
-    await Promise.all([
-      getLandlordProperties(),
-      getCategories(),
-    ]);
+  const [propertiesRes, categoriesRes] = await Promise.all([
+    getLandlordProperties(),
+    getCategories(),
+  ]);
 
-  const properties =
-    propertiesRes?.data?.result?.result ?? [];
+  const properties = propertiesRes?.data?.result?.result ?? [];
 
-  const property = properties.find(
-    (item: { id: string }) => item.id === id,
-  );
+  const property = properties.find((item: { id: string }) => item.id === id);
 
-  const categories =
-    categoriesRes?.data?.result?.categories ?? [];
+  const categories = categoriesRes?.data?.result?.categories ?? [];
 
   if (!property) {
     return (
       <main className="mx-auto w-full max-w-4xl px-6 py-10 lg:px-8">
         <div className="rounded-2xl border border-dashed p-12 text-center">
-          <h1 className="text-xl font-semibold">
-            Property not found
-          </h1>
+          <h1 className="text-xl font-semibold">Property not found</h1>
 
           <p className="mt-2 text-sm text-muted-foreground">
             The property you are trying to edit could not be found.
           </p>
 
           <Button asChild className="mt-6">
-            <Link href="/landlord/properties">
-              Back to Properties
-            </Link>
+            <Link href="/landlord/properties">Back to Properties</Link>
           </Button>
         </div>
       </main>
@@ -66,9 +57,7 @@ export default async function EditPropertyPage({
         </Button>
 
         <div className="mt-6">
-          <p className="text-sm font-medium text-primary">
-            Landlord Dashboard
-          </p>
+          <p className="text-sm font-medium text-primary">Landlord Dashboard</p>
 
           <h1 className="mt-1 text-3xl font-bold tracking-tight">
             Edit Property

@@ -2,7 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { getCategories } from "../../_actions/categories";
+import { getCategories } from "../../../../(public)/_actions/categories";
 import PropertyForm from "../../_components/landlord/PropertyForm";
 
 export default async function CreatePropertyPage() {
@@ -21,9 +21,7 @@ export default async function CreatePropertyPage() {
         </Button>
 
         <div className="mt-6">
-          <p className="text-sm font-medium text-primary">
-            Landlord Dashboard
-          </p>
+          <p className="text-sm font-medium text-primary">Landlord Dashboard</p>
 
           <h1 className="mt-1 text-3xl font-bold tracking-tight">
             Add Property
