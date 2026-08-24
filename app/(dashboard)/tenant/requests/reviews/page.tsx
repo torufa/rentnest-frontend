@@ -18,8 +18,8 @@ export default async function TenantReviewsPage() {
 
   const res = await getReviews();
 
-  const reviews: Review[] =
-    res.data?.result?.result?.rentalRequests ?? [];
+  const reviews: Review[] = res.data?.result?.result?.rentalRequests ?? [];
+  console.log(reviews, "dkfjkdsjfkf")
 
   return (
     <main className="mx-auto w-full max-w-5xl px-6 py-10 lg:px-8">

@@ -61,12 +61,11 @@ export default function ReviewForm({
       }
 
       toast.success("Review submitted successfully.");
-      router.push("/tenant/requests/review/");
+      router.push("/tenant/requests/reviews/");
 
       setRating(0);
       setReview("");
 
-      // Server component re-fetch করবে
       router.refresh();
     } catch {
       toast.error(
