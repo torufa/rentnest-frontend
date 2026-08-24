@@ -169,6 +169,13 @@ export default function RentalRequestDetails({
         />
       </div>
     )}
+    {request.status === "PAID" && (
+    <Button className="mt-3 w-full" asChild>
+      <Link href={`/tenant/requests/${request.id}/review/create`}>
+        Leave a Review
+      </Link>
+    </Button>
+  )}
 
     {request.status === "PAID" && (
       <div className="mt-3 rounded-xl border bg-muted/40 p-4">
