@@ -1,23 +1,33 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from "next/image"
+import Link from "next/link"
 import {
   ArrowLeft,
   MapPin,
   Star,
   Check,
-} from "lucide-react";
-import { getPropertyById } from "../../_actions/property";
+  User,
+  Mail,
+  CalendarDays,
+  ShieldCheck,
+} from "lucide-react"
 
+import { getPropertyById } from "../../_actions/property"
+import { getMe } from "@/service/getMe"
+import RentalRequestButton from "../../_components/properties/RentalRequestButton"
 export default async function PropertyDetailsPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>
 }) {
-  const { id } = await params;
+  const { id } = await params
 
-  const res = await getPropertyById(id);
+  const [propertyRes, userRes] = await Promise.all([
+    getPropertyById(id),
+    getMe(),
+  ])
 
-  const property = res?.data?.result;
+  const property = propertyRes?.data?.result
+  const currentUser = userRes?.data?.result
 
   if (!property) {
     return (
@@ -34,11 +44,27 @@ export default async function PropertyDetailsPage({
           Back to properties
         </Link>
       </main>
-    );
+    )
   }
+
+  const isLoggedIn = userRes?.success === true
+  const userRole = currentUser?.role ?? null
+  const landlord = property.user
+
+  const averageRating = property.reviews?.length
+    ? (
+        property.reviews.reduce(
+          (sum: number, review: any) =>
+            sum + review.rating,
+          0,
+        ) / property.reviews.length
+      ).toFixed(1)
+    : null
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
+
+      {/* Back */}
       <Link
         href="/properties"
         className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary"
@@ -47,7 +73,9 @@ export default async function PropertyDetailsPage({
         Back to properties
       </Link>
 
+      {/* Property */}
       <div className="grid gap-8 lg:grid-cols-2">
+
         {/* Image */}
         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted">
           {property.picture ? (
@@ -71,6 +99,7 @@ export default async function PropertyDetailsPage({
 
         {/* Details */}
         <div className="flex flex-col justify-center">
+
           <p className="text-sm font-medium text-primary">
             {property.category?.categoryName}
           </p>
@@ -114,12 +143,86 @@ export default async function PropertyDetailsPage({
                     <Check className="size-3.5 text-primary" />
                     {amenity}
                   </span>
-                )
+                ),
               )}
             </div>
           </div>
+
+          {/* Rental Request */}
+          <RentalRequestButton
+            propertyId={property.id}
+            isLoggedIn={isLoggedIn}
+            userRole={userRole}
+          />
         </div>
       </div>
+
+      {/* Landlord */}
+      <section className="mt-16">
+        <div className="mb-6">
+          <p className="text-sm font-medium text-primary">
+            Property Owner
+          </p>
+
+          <h2 className="mt-1 text-2xl font-bold">
+            Landlord Information
+          </h2>
+        </div>
+
+        <div className="rounded-2xl border bg-card p-6">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+
+            {/* Avatar */}
+            <div className="flex size-20 shrink-0 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-foreground">
+              {landlord?.name?.charAt(0).toUpperCase() ?? "L"}
+            </div>
+
+            <div className="flex-1">
+
+              <div className="flex flex-wrap items-center gap-3">
+                <h3 className="text-xl font-semibold">
+                  {landlord?.name}
+                </h3>
+
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                  <ShieldCheck className="size-3.5" />
+                  {landlord?.role}
+                </span>
+              </div>
+
+              <div className="mt-3 grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
+
+                <div className="flex items-center gap-2">
+                  <Mail className="size-4" />
+                  {landlord?.email}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <CalendarDays className="size-4" />
+                  Joined{" "}
+                  {landlord?.createdAt
+                    ? new Intl.DateTimeFormat("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      }).format(
+                        new Date(landlord.createdAt),
+                      )
+                    : "N/A"}
+                </div>
+
+              </div>
+
+              {landlord?.description && (
+                <p className="mt-4 max-w-2xl leading-7 text-muted-foreground">
+                  {landlord.description}
+                </p>
+              )}
+
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Reviews */}
       <section className="mt-16">
@@ -131,15 +234,7 @@ export default async function PropertyDetailsPage({
           <div className="flex items-center gap-1 text-sm">
             <Star className="size-4 fill-current" />
 
-            {property.reviews?.length
-              ? (
-                  property.reviews.reduce(
-                    (sum: number, review: any) =>
-                      sum + review.rating,
-                    0
-                  ) / property.reviews.length
-                ).toFixed(1)
-              : "No ratings"}
+            {averageRating ?? "No ratings"}
           </div>
         </div>
 
@@ -174,5 +269,5 @@ export default async function PropertyDetailsPage({
         </div>
       </section>
     </main>
-  );
+  )
 }
