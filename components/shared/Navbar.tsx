@@ -30,12 +30,22 @@ const navItems = [
   { label: "Contact Us", href: "/contact" },
 ]
 
+const dashboardPaths = {
+  ADMIN: "/admin",
+  LANDLORD: "/landlord",
+  TENANT: "/tenant",
+} as const
+
 export default function Navbar({ user }: NavbarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const userData = user?.data?.result
+
+  const dashboardPath = userData?.role
+    ? dashboardPaths[userData.role as keyof typeof dashboardPaths]
+    : null
 
   const getInitial = () => {
     if (userData?.role) return userData.role.charAt(0).toUpperCase()
@@ -52,7 +62,7 @@ export default function Navbar({ user }: NavbarProps) {
   }
 
   const handleLogout = async () => {
-    await logOut() 
+    await logOut()
     router.push("/login")
     toast.success("user logged out successfully.")
   }
@@ -61,6 +71,7 @@ export default function Navbar({ user }: NavbarProps) {
     <header className="sticky top-0 z-50 w-full">
       <nav className="border-b bg-background/75 backdrop-blur-xl backdrop-saturate-150">
         <div className="mx-auto flex h-20 max-w-[1600px] items-center justify-between px-6 sm:px-10 lg:px-16 xl:px-24">
+
           <Link
             href="/"
             onClick={closeMobileMenu}
@@ -69,9 +80,11 @@ export default function Navbar({ user }: NavbarProps) {
             Rent<span className="text-primary">Nest</span>
           </Link>
 
+          {/* Desktop Navigation */}
           <div className="hidden items-center gap-8 md:flex">
             {navItems.map((item) => {
               const active = isActive(item.href)
+
               return (
                 <Link
                   key={item.href}
@@ -83,12 +96,31 @@ export default function Navbar({ user }: NavbarProps) {
                   }`}
                 >
                   {item.label}
+
                   {active && (
                     <span className="absolute inset-x-0 -bottom-1 mx-auto h-0.5 w-5 rounded-full bg-primary" />
                   )}
                 </Link>
               )
             })}
+
+            {/* Dashboard */}
+            {user.success && dashboardPath && (
+              <Link
+                href={dashboardPath}
+                className={`relative py-2 text-sm font-medium transition-colors ${
+                  isActive(dashboardPath)
+                    ? "text-foreground"
+                    : "text-foreground/60 hover:text-foreground"
+                }`}
+              >
+                Dashboard
+
+                {isActive(dashboardPath) && (
+                  <span className="absolute inset-x-0 -bottom-1 mx-auto h-0.5 w-5 rounded-full bg-primary" />
+                )}
+              </Link>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -99,6 +131,7 @@ export default function Navbar({ user }: NavbarProps) {
                 <Button asChild variant="secondary">
                   <Link href="/login">Log In</Link>
                 </Button>
+
                 <Button asChild>
                   <Link href="/register">Register</Link>
                 </Button>
@@ -120,32 +153,44 @@ export default function Navbar({ user }: NavbarProps) {
                   sideOffset={10}
                   className="w-48 rounded-xl border bg-popover/95 p-1.5 shadow-xl backdrop-blur-xl"
                 >
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium">
-                    {user.data?.result.name || "name"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {user.data?.result.email || "email"}
-                  </p>
-                  <p className="text-xs p-2 bg-primary text-white">
-                    {user.data?.result.role || "role"}
-                  </p>
-                </div>
-              </DropdownMenuLabel>
-                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col gap-1">
+                      <p className="text-sm font-medium">
+                        {user.data?.result.name || "name"}
+                      </p>
+
+                      <p className="text-xs text-muted-foreground">
+                        {user.data?.result.email || "email"}
+                      </p>
+
+                      <p className="p-2 text-xs bg-primary text-white">
+                        {user.data?.result.role || "role"}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+
+                  <DropdownMenuItem
+                    asChild
+                    className="cursor-pointer rounded-lg"
+                  >
                     <Link href="/profile">
                       <UserIcon className="mr-2 size-4" />
                       Profile
                     </Link>
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
-                    <Link href="/dashboard">
-                      <LayoutDashboard className="mr-2 size-4" />
-                      Dashboard
-                    </Link>
-                  </DropdownMenuItem>
+                  {/* Role Based Dashboard */}
+                  {dashboardPath && (
+                    <DropdownMenuItem
+                      asChild
+                      className="cursor-pointer rounded-lg"
+                    >
+                      <Link href={dashboardPath}>
+                        <LayoutDashboard className="mr-2 size-4" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
 
                   <DropdownMenuSeparator />
 
@@ -160,22 +205,34 @@ export default function Navbar({ user }: NavbarProps) {
               </DropdownMenu>
             )}
 
+            {/* Mobile Menu Button */}
             <button
               type="button"
-              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              onClick={() => setMobileMenuOpen((open) => !open)}
+              aria-label={
+                mobileMenuOpen ? "Close menu" : "Open menu"
+              }
+              onClick={() =>
+                setMobileMenuOpen((open) => !open)
+              }
               className="flex size-10 items-center justify-center rounded-full border bg-background/60 backdrop-blur-md transition-colors hover:bg-muted md:hidden"
             >
-              {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+              {mobileMenuOpen ? (
+                <X className="size-5" />
+              ) : (
+                <Menu className="size-5" />
+              )}
             </button>
           </div>
         </div>
 
+        {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <div className="border-t bg-background/90 px-6 py-4 backdrop-blur-xl md:hidden">
             <div className="mx-auto flex max-w-[1600px] flex-col gap-1 sm:px-4">
+
               {navItems.map((item) => {
                 const active = isActive(item.href)
+
                 return (
                   <Link
                     key={item.href}
@@ -191,6 +248,21 @@ export default function Navbar({ user }: NavbarProps) {
                   </Link>
                 )
               })}
+
+              {/* Mobile Dashboard */}
+              {user.success && dashboardPath && (
+                <Link
+                  href={dashboardPath}
+                  onClick={closeMobileMenu}
+                  className={`rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
+                    isActive(dashboardPath)
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground/70 hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  Dashboard
+                </Link>
+              )}
             </div>
           </div>
         )}
