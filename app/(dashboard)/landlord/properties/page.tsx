@@ -5,6 +5,7 @@ import { MapPin, Plus, Pencil, Trash2 } from "lucide-react";
 import { getLandlordProperties } from "../_actions/landlord";
 import { Button } from "@/components/ui/button";
 import { LandlordProperty } from "@/lib/types";
+import DeletePropertyButton from "../_components/landlord/DeletePropertyButton";
 
 export default async function LandlordPropertiesPage() {
   const res = await getLandlordProperties();
@@ -119,15 +120,7 @@ export default async function LandlordPropertiesPage() {
                     </Link>
                   </Button>
 
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="flex-1"
-                    type="button"
-                  >
-                    <Trash2 className="mr-2 size-4" />
-                    Delete
-                  </Button>
+                  <DeletePropertyButton propertyId={property.id} />
                 </div>
               </div>
             </div>

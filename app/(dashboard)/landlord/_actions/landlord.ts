@@ -84,6 +84,23 @@ export const updateLandlordProperty = async (
   return res.json();
 };
 
+export const deleteLandlordProperty = async (
+  propertyId: string,
+) => {
+  const headers = await getAuthHeaders();
+
+  const res = await fetch(
+    `${process.env.BACKEND_API_URL}/api/landlord/properties/${propertyId}`,
+    {
+      method: "DELETE",
+      headers,
+      cache: "no-store",
+    },
+  );
+
+  return res.json();
+};
+
 export const getLandlordRentalRequests = async () => {
   const headers = await getAuthHeaders();
 
