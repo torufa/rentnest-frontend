@@ -1,5 +1,6 @@
 "use server";
 
+import { CreatePropertyData } from "@/lib/types";
 import { cookies } from "next/headers";
 
 const getAuthHeaders = async () => {
@@ -19,6 +20,27 @@ export const getLandlordProperties = async () => {
     `${process.env.BACKEND_API_URL}/api/landlord/properties`,
     {
       headers,
+      cache: "no-store",
+    },
+  );
+
+  return res.json();
+};
+
+export const createLandlordProperty = async (
+  data: CreatePropertyData,
+) => {
+  const headers = await getAuthHeaders();
+
+  const res = await fetch(
+    `${process.env.BACKEND_API_URL}/api/landlord/properties`,
+    {
+      method: "POST",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
       cache: "no-store",
     },
   );

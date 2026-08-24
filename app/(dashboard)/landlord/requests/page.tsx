@@ -73,11 +73,10 @@ export default async function LandlordRequestsPage() {
                 {/* Property image */}
                 <div className="relative size-24 shrink-0 overflow-hidden rounded-xl bg-muted">
                   {request.property?.picture ? (
-                    <Image
+                    <img
                       src={request.property.picture}
                       alt={request.property.propertyName}
-                      fill
-                      className="object-cover"
+                      className="block size-full object-cover transition-transform duration-300 hover:scale-105"
                     />
                   ) : (
                     <div className="flex size-full items-center justify-center text-xs text-muted-foreground">

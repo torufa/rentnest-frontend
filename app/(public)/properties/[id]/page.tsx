@@ -79,12 +79,11 @@ export default async function PropertyDetailsPage({
         {/* Image */}
         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted">
           {property.picture ? (
-            <Image
+            <img
               src={property.picture}
               alt={property.propertyName}
-              fill
-              className="object-cover"
-              priority
+              className="block size-full object-cover transition-transform duration-300 hover:scale-105"
+              fetchPriority="high"
             />
           ) : (
             <div className="flex size-full items-center justify-center text-muted-foreground">
