@@ -46,26 +46,10 @@ export default async function LandlordDashboardPage() {
     (property) => property.status === "AVAILABLE",
   ).length;
 
-  const rentedProperties = properties.filter(
-    (property) => property.status === "RENTED",
-  ).length;
 
-  const unavailableProperties = properties.filter(
-    (property) => property.status === "UNAVAILABLE",
-  ).length;
-
-  const totalRequests = requests.length;
 
   const pendingRequests = requests.filter(
     (request) => request.status === "PENDING",
-  ).length;
-
-  const approvedRequests = requests.filter(
-    (request) => request.status === "APPROVED",
-  ).length;
-
-  const rejectedRequests = requests.filter(
-    (request) => request.status === "REJECTED",
   ).length;
 
   const recentProperties = [...properties]
@@ -126,117 +110,11 @@ export default async function LandlordDashboardPage() {
           icon={CheckCircle2}
           description="Currently available"
         />
-
-        <StatCard
-          title="Rented"
-          value={rentedProperties}
-          icon={Home}
-          description="Currently rented"
-        />
-
-        <StatCard
-          title="Unavailable"
-          value={unavailableProperties}
-          icon={XCircle}
-          description="Currently unavailable"
-        />
-      </div>
-
-      {/* Request Stats */}
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          title="Total Requests"
-          value={totalRequests}
-          icon={Building2}
-          description="All rental requests"
-        />
-
-        <StatCard
-          title="Pending"
-          value={pendingRequests}
-          icon={Clock3}
-          description="Waiting for action"
-        />
-
-        <StatCard
-          title="Approved"
-          value={approvedRequests}
-          icon={CheckCircle2}
-          description="Approved requests"
-        />
-
-        <StatCard
-          title="Rejected"
-          value={rejectedRequests}
-          icon={XCircle}
-          description="Rejected requests"
-        />
       </div>
 
       {/* Recent Section */}
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        {/* Recent Requests */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Recent Rental Requests</CardTitle>
-
-              <p className="mt-1 text-sm text-muted-foreground">
-                Latest requests from tenants.
-              </p>
-            </div>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-            >
-              <Link href="/landlord/requests">
-                View all
-                <ArrowRight className="ml-1 size-4" />
-              </Link>
-            </Button>
-          </CardHeader>
-
-          <CardContent>
-            {!recentRequests.length ? (
-              <div className="rounded-xl border border-dashed p-8 text-center">
-                <p className="text-sm text-muted-foreground">
-                  No rental requests yet.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {recentRequests.map((request) => (
-                  <div
-                    key={request.id}
-                    className="flex items-center justify-between gap-4 rounded-xl border p-4"
-                  >
-                    <div className="min-w-0">
-                      <p className="truncate font-medium">
-                        {request.customer.name}
-                      </p>
-
-                      <p className="truncate text-sm text-muted-foreground">
-                        {request.property.propertyName}
-                      </p>
-
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {new Date(
-                          request.createdAt,
-                        ).toLocaleDateString()}
-                      </p>
-                    </div>
-
-                    <RequestStatus
-                      status={request.status}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        
 
         {/* Quick Actions */}
         <Card>
@@ -270,14 +148,6 @@ export default async function LandlordDashboardPage() {
               icon={Clock3}
             />
 
-            <QuickAction
-              href="/landlord/requests"
-              title="Pending Requests"
-              description={`${pendingRequests} request${
-                pendingRequests !== 1 ? "s" : ""
-              } waiting`}
-              icon={CheckCircle2}
-            />
           </CardContent>
         </Card>
       </div>
