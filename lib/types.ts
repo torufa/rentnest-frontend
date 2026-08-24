@@ -80,3 +80,44 @@ export interface Property {
 
   reviews: Review[];
 }
+
+export type RentalRequestStatus = "PENDING" | "APPROVED" | "REJECTED" | "PAID";
+
+export type LandlordProperty = {
+  id: string;
+  propertyName: string;
+  picture: string | null;
+  description: string;
+  amenities: string[];
+  location: string;
+  price: string;
+  status: PropertyStatus;
+  categoryId: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type RentalCustomer = {
+  id: string;
+  name: string;
+  email: string;
+  description?: string | null;
+  role: UserRole;
+  accountStatus: AccountStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type LandlordRentalRequest = {
+  id: string;
+  status: RentalRequestStatus;
+  customerId: string;
+  propertyId: string;
+  rentDate: string;
+  rentalExpiryDate: string;
+  createdAt: string;
+  updatedAt: string;
+  customer: RentalCustomer;
+  property: LandlordProperty;
+};
