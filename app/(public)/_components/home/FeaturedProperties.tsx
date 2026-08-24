@@ -44,7 +44,7 @@ export default async function FeaturedProperties() {
                 <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                   <div className="flex size-full items-center justify-center">
                     <Image
-                      src={property.picture}
+                      src={property.picture || "https://images.unsplash.com/photo-1667021836621-ef302544b61f?q=80&w=1039&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
                       alt={property.propertyName}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"

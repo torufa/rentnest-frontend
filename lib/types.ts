@@ -47,10 +47,21 @@ export type UserData = {
 
 export type PropertyStatus = "AVAILABLE" | "RENTED" | "UNAVAILABLE";
 
+export type Review = {
+  id: string;
+  review: string;
+  rating: number;
+  status: string;
+  userId: string;
+  propertyId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export interface Property {
   id: string;
   propertyName: string;
-  picture: string | "No picture given from the landlord";
+  picture: string | null;
   description: string;
   amenities: string[];
   location: string;
@@ -60,7 +71,12 @@ export interface Property {
   userId: string;
   createdAt: string;
   updatedAt: string;
-  category: {categoryName: string};
+
+  category: {
+    categoryName: string;
+  };
+
   user: User;
-  reviews: [];
+
+  reviews: Review[];
 }
