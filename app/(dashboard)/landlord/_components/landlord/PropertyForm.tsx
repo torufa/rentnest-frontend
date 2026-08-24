@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+
 import {
   Select,
   SelectContent,
@@ -16,11 +17,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { createLandlordProperty } from "../../_actions/landlord";
+import {
+  createLandlordProperty,
+  updateLandlordProperty,
+} from "../../_actions/landlord";
 
 import type {
   CreatePropertyData,
   PropertyStatus,
+  UpdatePropertyData,
 } from "@/lib/types";
 
 type Category = {
@@ -28,27 +33,69 @@ type Category = {
   categoryName: string;
 };
 
+type Property = {
+  id: string;
+  propertyName: string;
+  picture: string | null;
+  description: string;
+  amenities: string[];
+  location: string;
+  price: string;
+  status: PropertyStatus;
+  categoryId: string;
+};
+
 type PropertyFormProps = {
   categories: Category[];
+  mode?: "create" | "edit";
+  propertyId?: string;
+  property?: Property;
 };
 
 export default function PropertyForm({
   categories,
+  mode = "create",
+  propertyId,
+  property,
 }: PropertyFormProps) {
   const router = useRouter();
 
+  const isEditMode = mode === "edit";
+
   const [isLoading, setIsLoading] = useState(false);
 
-  const [propertyName, setPropertyName] = useState("");
-  const [picture, setPicture] = useState("");
-  const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("");
-  const [price, setPrice] = useState("");
-  const [amenities, setAmenities] = useState("");
-  const [categoryId, setCategoryId] = useState("");
+  const [propertyName, setPropertyName] = useState(
+    property?.propertyName ?? "",
+  );
+
+  const [picture, setPicture] = useState(
+    property?.picture ?? "",
+  );
+
+  const [description, setDescription] = useState(
+    property?.description ?? "",
+  );
+
+  const [location, setLocation] = useState(
+    property?.location ?? "",
+  );
+
+  const [price, setPrice] = useState(
+    property?.price ?? "",
+  );
+
+  const [amenities, setAmenities] = useState(
+    property?.amenities?.join(", ") ?? "",
+  );
+
+  const [categoryId, setCategoryId] = useState(
+    property?.categoryId ?? "",
+  );
 
   const [status, setStatus] =
-    useState<PropertyStatus>("AVAILABLE");
+    useState<PropertyStatus>(
+      property?.status ?? "AVAILABLE",
+    );
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
@@ -85,40 +132,82 @@ export default function PropertyForm({
       .map((item) => item.trim())
       .filter(Boolean);
 
-    const propertyData: CreatePropertyData = {
-      propertyName: propertyName.trim(),
-      description: description.trim(),
-      location: location.trim(),
-      amenities: amenitiesArray,
-      price: Number(price),
-      status,
-      categoryId,
-      ...(picture.trim() && {
-        picture: picture.trim(),
-      }),
-    };
-
     try {
       setIsLoading(true);
 
-      const res = await createLandlordProperty(propertyData);
+      if (isEditMode) {
+        if (!propertyId) {
+          toast.error("Property ID is missing.");
+          return;
+        }
 
-      if (!res?.success) {
-        toast.error(
-          res?.message || "Failed to create property.",
+        const propertyData: UpdatePropertyData = {
+          propertyName: propertyName.trim(),
+          description: description.trim(),
+          location: location.trim(),
+          amenities: amenitiesArray,
+          price: Number(price),
+          status,
+          categoryId,
+          ...(picture.trim() && {
+            picture: picture.trim(),
+          }),
+        };
+
+        const res = await updateLandlordProperty(
+          propertyId,
+          propertyData,
         );
-        return;
-      }
 
-      toast.success(
-        res?.message || "Property created successfully.",
-      );
+        if (!res?.success) {
+          toast.error(
+            res?.message || "Failed to update property.",
+          );
+          return;
+        }
+
+        toast.success(
+          res?.message ||
+            "Property updated successfully.",
+        );
+      } else {
+        const propertyData: CreatePropertyData = {
+          propertyName: propertyName.trim(),
+          description: description.trim(),
+          location: location.trim(),
+          amenities: amenitiesArray,
+          price: Number(price),
+          status,
+          categoryId,
+          ...(picture.trim() && {
+            picture: picture.trim(),
+          }),
+        };
+
+        const res =
+          await createLandlordProperty(propertyData);
+
+        if (!res?.success) {
+          toast.error(
+            res?.message ||
+              "Failed to create property.",
+          );
+          return;
+        }
+
+        toast.success(
+          res?.message ||
+            "Property created successfully.",
+        );
+      }
 
       router.push("/landlord/properties");
       router.refresh();
     } catch {
       toast.error(
-        "Something went wrong. Please try again.",
+        isEditMode
+          ? "Failed to update property."
+          : "Failed to create property.",
       );
     } finally {
       setIsLoading(false);
@@ -131,6 +220,7 @@ export default function PropertyForm({
       className="space-y-8 rounded-2xl border bg-card p-6 shadow-sm sm:p-8"
     >
       <div className="grid gap-6 sm:grid-cols-2">
+
         {/* Property Name */}
         <div className="space-y-2 sm:col-span-2">
           <label
@@ -217,7 +307,7 @@ export default function PropertyForm({
           />
         </div>
 
-        {/* Monthly Rent */}
+        {/* Price */}
         <div className="space-y-2">
           <label
             htmlFor="price"
@@ -342,7 +432,13 @@ export default function PropertyForm({
           type="submit"
           disabled={isLoading}
         >
-          {isLoading ? "Creating..." : "Create Property"}
+          {isLoading
+            ? isEditMode
+              ? "Updating..."
+              : "Creating..."
+            : isEditMode
+              ? "Update Property"
+              : "Create Property"}
         </Button>
       </div>
     </form>
