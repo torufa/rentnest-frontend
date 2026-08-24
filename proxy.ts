@@ -3,6 +3,7 @@ import { jwtUtils } from "@/utils/jwt";
 import { getNewAccessToken } from "./service/refreshToken";
 
 const AUTH_ROUTES = ["/login", "/register"];
+const AUTHENTICATED_ROUTES = ["/profile"]
 
 const PUBLIC_ROUTES = ["/", "/properties", "/contact"];
 
@@ -63,6 +64,11 @@ export async function proxy(request: NextRequest) {
 
   const isAuthRoute = isRouteMatch(pathname, AUTH_ROUTES);
 
+  const isAuthenticatedRoute = isRouteMatch(
+  pathname,
+  AUTHENTICATED_ROUTES,
+);
+
   const protectedRouteEntry = (
     Object.entries(PROTECTED_ROUTES) as [Role, readonly string[]][]
   ).find(([, routes]) => isRouteMatch(pathname, routes));
@@ -121,6 +127,16 @@ export async function proxy(request: NextRequest) {
 
     return response;
   }
+  if (isAuthenticatedRoute && !verifiedAccessToken?.success) {
+  const loginUrl = new URL("/login", request.url);
+
+  loginUrl.searchParams.set(
+    "redirectTo",
+    pathname + search,
+  );
+
+  return NextResponse.redirect(loginUrl);
+}
 
   if (isPublicRoute) {
     return response;
