@@ -121,3 +121,25 @@ export type LandlordRentalRequest = {
   customer: RentalCustomer;
   property: LandlordProperty;
 };
+
+export type CreatePropertyData = {
+  propertyName: string;
+  description: string;
+  location: string;
+  amenities: string[];
+  price: number;
+  status: PropertyStatus;
+  categoryId: string;
+  picture?: string;
+};
+
+export type UpdatePropertyData = {
+  propertyName?: string;
+  description?: string;
+  location?: string;
+  amenities?: string[];
+  price?: number;
+  status?: PropertyStatus;
+  categoryId?: string;
+  picture?: string;
+};

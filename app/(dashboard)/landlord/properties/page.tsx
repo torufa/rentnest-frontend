@@ -1,14 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Plus } from "lucide-react";
+import { MapPin, Plus, Pencil, Trash2 } from "lucide-react";
 
 import { getLandlordProperties } from "../_actions/landlord";
 import { Button } from "@/components/ui/button";
+import { LandlordProperty } from "@/lib/types";
 
 export default async function LandlordPropertiesPage() {
   const res = await getLandlordProperties();
 
-  const properties = res?.data?.result?.result ?? [];
+  const properties: LandlordProperty[] =
+    res?.data?.result?.result ?? [];
 
   return (
     <main className="mx-auto w-full max-w-7xl px-6 py-10 lg:px-8">
@@ -47,7 +49,7 @@ export default async function LandlordPropertiesPage() {
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {properties.map((property: any) => (
+          {properties.map((property) => (
             <div
               key={property.id}
               className="overflow-hidden rounded-2xl border bg-card shadow-sm transition-shadow hover:shadow-md"
@@ -100,6 +102,32 @@ export default async function LandlordPropertiesPage() {
                     <Link href={`/properties/${property.id}`}>
                       View
                     </Link>
+                  </Button>
+                </div>
+
+                <div className="mt-4 flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    asChild
+                  >
+                    <Link
+                      href={`/landlord/properties/${property.id}/edit`}
+                    >
+                      <Pencil className="mr-2 size-4" />
+                      Edit
+                    </Link>
+                  </Button>
+
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="flex-1"
+                    type="button"
+                  >
+                    <Trash2 className="mr-2 size-4" />
+                    Delete
                   </Button>
                 </div>
               </div>
