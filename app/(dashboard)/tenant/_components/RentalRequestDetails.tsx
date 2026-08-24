@@ -15,6 +15,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { TenantRentalRequest } from "@/lib/types";
 
 import RentalRequestStatus from "./RentalRequestStatus";
+import PaymentButton from "./PaymentButton";
 
 type RentalRequestDetailsProps = {
   request: TenantRentalRequest;
@@ -130,57 +131,59 @@ export default function RentalRequestDetails({
 
         {/* Rental Information */}
         <Card className="lg:col-span-2">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                <Home className="size-5" />
-              </div>
+  <CardContent className="p-6">
+    <div className="flex items-center gap-3">
+      <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+        <Home className="size-5" />
+      </div>
 
-              <div>
-                <h2 className="font-semibold">
-                  Rental Information
-                </h2>
+      <div>
+        <h2 className="font-semibold">
+          Rental Information
+        </h2>
 
-                <p className="text-xs text-muted-foreground">
-                  Request #{request.id.slice(0, 8)}
-                </p>
-              </div>
-            </div>
+        <p className="text-xs text-muted-foreground">
+          Request #{request.id.slice(0, 8)}
+        </p>
+      </div>
+    </div>
 
-            <div className="mt-6 space-y-5">
-              <InfoRow
-                icon={Clock3}
-                label="Request Status"
-                value={
-                  <RentalRequestStatus
-                    status={request.status}
-                  />
-                }
-              />
+    <div className="mt-6 space-y-5">
+      {/* তোমার InfoRow গুলো এখানে থাকবে */}
+    </div>
 
-              <InfoRow
-                icon={CalendarDays}
-                label="Rent Date"
-                value={formatDate(request.rentDate)}
-              />
+    <Button
+      className="mt-8 w-full"
+      variant="outline"
+      asChild
+    >
+      <Link href={`/properties/${property.id}`}>
+        View Property
+      </Link>
+    </Button>
 
-              <InfoRow
-                icon={CalendarDays}
-                label="Rental Expiry"
-                value={formatDate(
-                  request.rentalExpiryDate,
-                )}
-              />
+    {request.status === "APPROVED" && (
+      <div className="mt-3">
+        <PaymentButton
+          rentalRequestId={request.id}
+        />
+      </div>
+    )}
 
-              <InfoRow
-                icon={CalendarDays}
-                label="Requested On"
-                value={formatDate(request.createdAt)}
-              />
-            </div>
+    {request.status === "PAID" && (
+      <div className="mt-3 rounded-xl border bg-muted/40 p-4">
+        <p className="font-medium">
+          Payment completed
+        </p>
 
-          </CardContent>
-        </Card>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Your payment for this rental request has
+          been completed successfully.
+        </p>
+      </div>
+    )}
+  </CardContent>
+</Card>
       </div>
     </div>
   );
