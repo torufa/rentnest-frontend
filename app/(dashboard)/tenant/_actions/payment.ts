@@ -33,3 +33,35 @@ export const createRentalPayment = async (
 
   return res.json();
 };
+
+export const getTenantPayments = async () => {
+  const headers = await getAuthHeaders();
+
+  const res = await fetch(
+    `${process.env.BACKEND_API_URL}/api/payments/`,
+    {
+      headers,
+      cache: "no-store",
+    },
+  );
+
+  const data = await res.json();
+
+  console.log("PAYMENTSsfdsfsd:", data);
+
+  return data;
+};
+
+export const getTenantPayment = async (paymentId: string) => {
+  const headers = await getAuthHeaders();
+
+  const res = await fetch(
+    `${process.env.BACKEND_API_URL}/api/payments/${paymentId}`,
+    {
+      headers,
+      cache: "no-store",
+    },
+  );
+
+  return res.json();
+};

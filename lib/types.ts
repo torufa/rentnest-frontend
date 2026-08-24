@@ -170,3 +170,28 @@ export type TenantRentalRequest = {
   updatedAt: string;
   property: TenantRentalProperty;
 };
+
+export type TenantPayment = {
+  id: string;
+  transactionId: string;
+  rentalRequestId: string;
+  amount: string;
+  method: string;
+  status: string;
+  paidAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  rental: {
+    id: string;
+    status: string;
+    rentDate: string;
+    rentalExpiryDate: string;
+    property: {
+      id: string;
+      propertyName: string;
+      picture: string;
+      location: string;
+      price: string;
+    };
+  };
+};
